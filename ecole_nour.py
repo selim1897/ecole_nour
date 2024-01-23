@@ -40,5 +40,5 @@ if doc is not None:
     if doc.name.endswith('pdf'):
         images = pdf.pdfinfo_from_bytes(doc.getvalue())
     
-        st.write(images)
+    st.write(dir(images))
 
