@@ -41,13 +41,13 @@ if doc is not None:
     if doc.name.endswith('pdf'):
         images = pdf.convert_from_bytes(doc.getvalue())
 
-    for im in images:
-        text = pytesseract.image_to_string(im, lang=lg)
+        for im in images:
+            text = pytesseract.image_to_string(im, lang=lg)
 
-        text_from_img += text + "\n"
+            text_from_img += text + "\n"
     
     
-    
+    st.write(text_from_img)
     if text_from_img is None or text_from_img == "":
         if genre == "عربي":
             text_from_img = "لا يوجد نص في الصورة"
