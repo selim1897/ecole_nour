@@ -37,8 +37,28 @@ if doc is not None:
     # To read image file buffer as a PIL Image:
     #img = Image.open(img_file_buffer)
     #text_from_img = pytesseract.image_to_string(img, lang=lg)
+    text_from_img = ""
     if doc.name.endswith('pdf'):
-        images = pdf.pdfinfo_from_bytes(doc.getvalue())
+        images = pdf.convert_from_bytes(doc.getvalue())
+
+    for im in images:
+        text = pytesseract.image_to_string(im, lang=lg)
+
+        text_from_img += text + "\n"
     
-    st.write(dir(images))
+    
+    
+    if text_from_img is None or text_from_img == "":
+        if genre == "عربي":
+            text_from_img = "لا يوجد نص في الصورة"
+        elif genre == "Français":
+            text_from_img = "Il n'y a pas de texte dans l\'image"
+        else:
+            text_from_img = "There is no text in the image"
+
+    mp3_fp = BytesIO()
+    tts = gTTS(text_from_img, lang=lg_mp3)
+    tts.write_to_fp(mp3_fp)
+
+    st.audio(mp3_fp, format='audio/wav')
 
