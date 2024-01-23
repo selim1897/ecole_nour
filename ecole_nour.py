@@ -46,8 +46,6 @@ if doc is not None:
 
             text_from_img += text + "\n"
     
-    
-    st.write(text_from_img)
     if text_from_img is None or text_from_img == "":
         if genre == "عربي":
             text_from_img = "لا يوجد نص في الصورة"
@@ -61,4 +59,5 @@ if doc is not None:
     tts.write_to_fp(mp3_fp)
 
     st.audio(mp3_fp, format='audio/wav')
+    st.write(text_from_img)
 
