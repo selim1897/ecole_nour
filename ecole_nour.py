@@ -11,7 +11,7 @@ st.set_page_config(page_title="Input", page_icon="🏠️", layout="centered", i
 
 #pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
-label = ""
+col = "text"
 
 genre = st.radio(
     "",
@@ -30,10 +30,12 @@ else:
     lg_mp3 = "en"
 
 def reset_doc():
-    doc = None
+    if txt_extracted is not None:
+        del txt_extracted
 
 def reset_text():
-    txt_extracted = None
+    if doc is not None:
+        del doc
 
 tab1, tab2 = st.tabs(["Text", "Pdf"])
 
@@ -64,7 +66,9 @@ if doc is not None or txt_extracted is not None:
 
     mp3_fp = BytesIO()
     tts = gTTS(txt_extracted, lang=lg_mp3)
-    tts.write_to_fp(mp3_fp)
+    
+    if doc is not None:
+        tts.write_to_fp(mp3_fp)
 
     st.audio(mp3_fp, format='audio/wav')
     st.write(txt_extracted)
