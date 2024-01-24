@@ -9,7 +9,7 @@ import pdf2image as pdf
 
 st.set_page_config(page_title="Input", page_icon="🏠️", layout="centered", initial_sidebar_state="auto", menu_items=None)
 
-pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+#pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
 label = ""
 
@@ -29,36 +29,37 @@ else:
     lg = "eng"
     lg_mp3 = "en"
 
-#img_file_buffer = st.camera_input(label)
-    
-doc = st.file_uploader("", type=["pdf", "docx", "doc"], accept_multiple_files=False, key=None, help=None, on_change=None, args=None, kwargs=None, disabled=False, label_visibility="hidden")
+tab1, tab2 = st.tabs(["Text", "File"])
 
-if doc is not None:
-    # To read image file buffer as a PIL Image:
-    #img = Image.open(img_file_buffer)
-    #text_from_img = pytesseract.image_to_string(img, lang=lg)
-    text_from_img = ""
-    if doc.name.endswith('pdf'):
-        images = pdf.convert_from_bytes(doc.getvalue())
+with tab1:
+    txt_extracted = st.text_area("text")
 
-        for im in images:
-            text = pytesseract.image_to_string(im, lang=lg)
+with tab2:    
+    doc = st.file_uploader("", type=["pdf", "docx", "doc"], accept_multiple_files=False, key=None, help=None, on_change=None, args=None, kwargs=None, disabled=False, label_visibility="hidden")
 
-            text_from_img += text + "\n"
+if doc is not None or txt_extracted is not None:
+    if doc is not None:
+        txt_extracted = ""
+        if doc.name.endswith('pdf'):
+            images = pdf.convert_from_bytes(doc.getvalue())
+
+            for im in images:
+                text = pytesseract.image_to_string(im, lang=lg)
+
+                txt_extracted += text + "\n"
     
-    
-    st.write(text_from_img)
-    if text_from_img is None or text_from_img == "":
+    if txt_extracted is None or txt_extracted == "":
         if genre == "عربي":
-            text_from_img = "لا يوجد نص في الصورة"
+            txt_extracted = "لا يوجد نص"
         elif genre == "Français":
-            text_from_img = "Il n'y a pas de texte dans l\'image"
+            txt_extracted = "Il n'y a pas de texte"
         else:
-            text_from_img = "There is no text in the image"
+            txt_extracted = "There is no text"
 
     mp3_fp = BytesIO()
-    tts = gTTS(text_from_img, lang=lg_mp3)
+    tts = gTTS(txt_extracted, lang=lg_mp3)
     tts.write_to_fp(mp3_fp)
 
     st.audio(mp3_fp, format='audio/wav')
+    st.write(txt_extracted)
 
