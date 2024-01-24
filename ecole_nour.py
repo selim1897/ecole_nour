@@ -29,13 +29,19 @@ else:
     lg = "eng"
     lg_mp3 = "en"
 
-tab1, tab2 = st.tabs(["Text", "File"])
+def reset_doc():
+    doc = None
+
+def reset_text():
+    txt_extracted = None
+
+tab1, tab2 = st.tabs(["Text", "Pdf"])
 
 with tab1:
-    txt_extracted = st.text_area("text")
+    txt_extracted = st.text_area("text", on_change=reset_doc)
 
 with tab2:    
-    doc = st.file_uploader("", type=["pdf", "docx", "doc"], accept_multiple_files=False, key=None, help=None, on_change=None, args=None, kwargs=None, disabled=False, label_visibility="hidden")
+    doc = st.file_uploader("", type=["pdf", "docx", "doc"], accept_multiple_files=False, key=None, help=None, on_change=reset_text, args=None, kwargs=None, disabled=False, label_visibility="hidden")
 
 if doc is not None or txt_extracted is not None:
     if doc is not None:
