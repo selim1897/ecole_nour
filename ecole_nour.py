@@ -46,15 +46,16 @@ tab1, tab2 = st.tabs(["Text", "Document"])
 with tab1:
     txt_extracted = st.text_area("text")
     if st.button(confirm):
-        txt_extracted = check()
+        txt_extracted = check(txt_extracted)
         mp3_fp = BytesIO()
         tts = gTTS(txt_extracted, lang=lg_mp3)
+        tts.write_to_fp(mp3_fp)
         st.audio(mp3_fp, format='audio/wav')
 
 
 with tab2:    
     doc = st.file_uploader("Document", type=["pdf", "docx", "doc"], accept_multiple_files=False, key=None, help=None, on_change=None, args=None, kwargs=None, disabled=False, label_visibility="hidden")
-    if st.button(confirm):
+    if st.button(confirm+" "):
         txt_extracted = ""
         if doc is not None:
             if doc.name.endswith('pdf'):
@@ -64,8 +65,8 @@ with tab2:
                     text = pytesseract.image_to_string(im, lang=lg)
                     txt_extracted += text + "\n"
         
-        txt_extracted = check()
-
+        txt_extracted = check(txt_extracted)
+        
         mp3_fp = BytesIO()
         tts = gTTS(txt_extracted, lang=lg_mp3)
 
