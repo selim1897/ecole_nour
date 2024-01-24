@@ -29,35 +29,37 @@ else:
     lg = "eng"
     lg_mp3 = "en"
 
-#img_file_buffer = st.camera_input(label)
+tab1, tab2 = st.tabs(["Text", "File"])
+
+with tab1:
+    txt_extracted = st.text_area("text")
+
+with tab2:    
+    doc = st.file_uploader("", type=["pdf", "docx", "doc"], accept_multiple_files=False, key=None, help=None, on_change=None, args=None, kwargs=None, disabled=False, label_visibility="hidden")
+
+if doc is not None or txt_extracted is not None:
+    if doc is not None:
+        txt_extracted = ""
+        if doc.name.endswith('pdf'):
+            images = pdf.convert_from_bytes(doc.getvalue())
+
+            for im in images:
+                text = pytesseract.image_to_string(im, lang=lg)
+
+                txt_extracted += text + "\n"
     
-doc = st.file_uploader("", type=["pdf", "docx", "doc"], accept_multiple_files=False, key=None, help=None, on_change=None, args=None, kwargs=None, disabled=False, label_visibility="hidden")
-
-if doc is not None:
-    # To read image file buffer as a PIL Image:
-    #img = Image.open(img_file_buffer)
-    #text_from_img = pytesseract.image_to_string(img, lang=lg)
-    text_from_img = ""
-    if doc.name.endswith('pdf'):
-        images = pdf.convert_from_bytes(doc.getvalue())
-
-        for im in images:
-            text = pytesseract.image_to_string(im, lang=lg)
-
-            text_from_img += text + "\n"
-    
-    if text_from_img is None or text_from_img == "":
+    if txt_extracted is None or txt_extracted == "":
         if genre == "عربي":
-            text_from_img = "لا يوجد نص في الصورة"
+            txt_extracted = "لا يوجد نص"
         elif genre == "Français":
-            text_from_img = "Il n'y a pas de texte dans l\'image"
+            txt_extracted = "Il n'y a pas de texte"
         else:
-            text_from_img = "There is no text in the image"
+            txt_extracted = "There is no text"
 
     mp3_fp = BytesIO()
-    tts = gTTS(text_from_img, lang=lg_mp3)
+    tts = gTTS(txt_extracted, lang=lg_mp3)
     tts.write_to_fp(mp3_fp)
 
     st.audio(mp3_fp, format='audio/wav')
-    st.write(text_from_img)
+    st.write(txt_extracted)
 
