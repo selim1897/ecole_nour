@@ -5,9 +5,10 @@ from gtts import gTTS
 from io import BytesIO
 import streamlit as st
 import pdf2image as pdf
+import docx2txt
 
 
-st.set_page_config(page_title="Input", page_icon="🏠️", layout="centered", initial_sidebar_state="auto", menu_items=None)
+st.set_page_config(page_title="Ecole Nour", page_icon="🏠️", layout="centered", initial_sidebar_state="auto", menu_items=None)
 
 #pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
@@ -22,7 +23,7 @@ def check(txt_extracted):
     return txt_extracted
 
 genre = st.radio(
-    "",
+    "Language",
     ["عربي", "Français", "English"],
     horizontal=True,
 )
@@ -54,7 +55,7 @@ with tab1:
 
 
 with tab2:    
-    doc = st.file_uploader("Document", type=["pdf", "docx", "doc"], accept_multiple_files=False, key=None, help=None, on_change=None, args=None, kwargs=None, disabled=False, label_visibility="hidden")
+    doc = st.file_uploader("Document", type=["pdf", "docx"], accept_multiple_files=False, key=None, help=None, on_change=None, args=None, kwargs=None, disabled=False, label_visibility="hidden")
     if st.button(confirm+" "):
         txt_extracted = ""
         if doc is not None:
@@ -64,6 +65,9 @@ with tab2:
                 for im in images:
                     text = pytesseract.image_to_string(im, lang=lg)
                     txt_extracted += text + "\n"
+            
+            elif doc.name.endswith('docx'):
+                txt_extracted = docx2txt.process(doc.getvalue())
         
         txt_extracted = check(txt_extracted)
         
