@@ -67,7 +67,7 @@ with tab2:
                     txt_extracted += text + "\n"
             
             elif doc.name.endswith('docx'):
-                txt_extracted = docx2txt.process(doc.getvalue())
+                txt_extracted = docx2txt.process(doc)
         
         txt_extracted = check(txt_extracted)
         
