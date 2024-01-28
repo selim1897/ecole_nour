@@ -50,7 +50,7 @@ else:
     confirm = "Listen"
 
 
-tab1, tab2, tab3 = st.tabs(["Text", "Document", "Photo"])
+tab1, tab2 = st.tabs(["Text", "File"])
 
 with tab1:
     txt_extracted = st.text_area("text")
@@ -60,7 +60,7 @@ with tab1:
 
 
 with tab2:    
-    doc = st.file_uploader("Document", type=["pdf", "docx"], accept_multiple_files=False, key=None, help=None, on_change=None, args=None, kwargs=None, disabled=False, label_visibility="hidden")
+    doc = st.file_uploader("Document", type=["pdf", "docx", "jpg", "png"], accept_multiple_files=False, key=None, help=None, on_change=None, args=None, kwargs=None, disabled=False, label_visibility="hidden")
     if st.button(confirm+" "):
         txt_extracted = ""
         if doc is not None:
@@ -73,6 +73,10 @@ with tab2:
             
             elif doc.name.endswith('docx'):
                 txt_extracted = docx2txt.process(doc)
+
+            elif doc.name.endswith('jpg') or doc.name.endswith('png'):
+                img = Image.open(doc)
+                txt_extracted = pytesseract.image_to_string(img, lang=lg)
         
         txt_extracted = check(txt_extracted)
         
@@ -80,16 +84,3 @@ with tab2:
         
         st.write(txt_extracted)
 
-with tab3:
-    img_file_buffer = st.camera_input("Take a picture")
-
-    if st.button(" "+confirm):
-        txt_extracted = ""
-        if img_file_buffer is not None:
-            img = Image.open(img_file_buffer)
-            st.write(dir(img))
-            txt_extracted = pytesseract.image_to_string(img, lang=lg)
-
-        txt_extracted = check(txt_extracted)
-        generate_voice(txt_extracted, lg_mp3)
-        st.write(txt_extracted)
